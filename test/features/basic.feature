@@ -48,8 +48,51 @@ Feature: Create Boost BAN followed by Subscriber
      Then the message header response value named "NXHeader>ReplyCompCode" must equal "0" 
      And the message header response value named "NXHeader>ServiceName" must equal "AMD.ENSEMBLE.CREATE_BAN"
      And the message body response value named "createBan>CreateBanRespInfo>banId" should be 9 characters long
-     Then store the "createBan>CreateBanRespInfo>banId" value in variable "StoredBoostBan"
+     Then store the "createBan>CreateBanRespInfo>banId" value in variable "$StoredBoostBan"
 
+     Given the message "create-subscriber.xml" with the following values:
+
+     | tag                                                                   | content                   |
+     | "NXHeader>Version" | "0102" |
+     | "NXHeader>ServiceName" | "AMD.ENSEMBLE.ADD_SUB_INFO" |
+	| "NXHeader>ServiceVer" | "0102" |
+	| "NXHeader>DialogType" | "2" |
+	| "NXHeader>DialogRef" | "4BN" |
+	| "NXHeader>ApplRef" | "4BN" |
+	| "NXHeader>ApplGroup" | "4BN" |
+	| "NXHeader>ContentType" | "XML" |
+	| "NXHeader>ReqSentTime" | "2016/09/09 00:58:52" |
+	| "createSubscriber>banInfo>banId" | "$StoredBoostBan" |
+	| "createSubscriber>subscriberApiInfo>networkInfo>networkInd" | "C" |
+	| "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>numberLocation" | "REG" |
+	| "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>ptnType" | "RGL" |
+	| "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>method" | "R" |
+	| "createSubscriber>subscriberApiInfo>resourceApiInfo>npaNxxInfo>npa" | "408" |
+	| "createSubscriber>subscriberApiInfo>resourceApiInfo>npaNxxInfo>ngp" | "SFRCBL408" |
+	| "createSubscriber>subscriberApiInfo>resourceApiInfo>naiInfo>naiInd" | "Y" |
+	| "createSubscriber>subscriberApiInfo>subAdditionalInfo>dealerAgent" | "ZEABV00X" |
+	| "createSubscriber>subscriberApiInfo>subAdditionalInfo>oarssInd" | "false" |
+	| "createSubscriber>subscriberApiInfo>ldcInfo>ldcCode" | "NXTL" |
+	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>pricePlanSocCode" | "MUCX1350" |
+	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "CHSDA" |
+	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "CLIP" |
+	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "HLT" |
+	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "INT" |
+	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "PM" |
+	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "SMS" |
+	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "STD" |
+	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "UNTETH" |
+	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>otherSocInfoList>SocInfo>pricePlanSocCode" | "VMENGLISH" |
+	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>otherSocInfoList>SocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "VMC9" |
+	| "createSubscriber>subscriberApiInfo>equipmentApiInfoList>EquipmentApiInfo>itemId" | "AL2017BAVB" |
+	| "createSubscriber>subscriberApiInfo>equipmentApiInfoList>EquipmentApiInfo>serial" | "270113185012770329" |
+	| "createSubscriber>subscriberApiInfo>equipmentApiInfoList>EquipmentApiInfo>serialType" | "E" |
+	| "createSubscriber>subscriberApiInfo>equipmentApiInfoList>EquipmentApiInfo>activateInd" | "Y" |
+	| "createSubscriber>subscriberApiInfo>memoInfo>memoSource" | "F" |
+	| "createSubscriber>applicationDataInfo>applicationID" | "FAST" |
+
+     When we receive the response
+     Then the message header response value named "NXHeader>ReplyCompCode" must equal "0" 
 
 
      Given the message "create_ban.xml" with the following values:

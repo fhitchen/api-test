@@ -14,7 +14,8 @@
 
 (Given #"^the message \"([^\"]*)\" with the following values:$" [message-file data]
        (reset! x-values (table->rows data))
-       (let [message (set-values (table->rows data) (slurp (str "resources/messages/" message-file)))]
+       (let [message (set-values (replace-variables (table->rows data)) (slurp (str "resources/messages/" message-file)))]
+         ;(println message)
          (mq-send message)))
 
 (When #"^we receive the response$" []

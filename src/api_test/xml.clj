@@ -17,7 +17,7 @@
 
 ;(def test-response "<?xml version='1.0'?><response><NXHeader><Version></Version><ServiceName>AMD.ENSEMBLE.CREATE_BAN</ServiceName><ApplRef>1477923078_BOOST_BAN</ApplRef><ReplyCompCode>0</ReplyCompCode></NXHeader><header></header><createBan><CreateBanRespInfo><banId>754776797</banId></CreateBanRespInfo></createBan></response>")
 
-;(def test-values (lazy-seq '({:content "888888888", :tag "createBan>createBanRespInfo>banId"} {:content "1142664520", :tag "NXHeader>rReplyCompCode"})))
+(def test-values (lazy-seq '({:content "888888888", :tag "createBan>createBanRespInfo>banId"} {:content "1142664520", :tag "NXHeader>rReplyCompCode"})))
 
 ;(println (pr-str test-values))
 
@@ -67,7 +67,8 @@
           (recur (zip/next z)))))))
 
 
-(print-values "create_sub_Boost_monthly.xml")
+;(print-values "create-subscriber.xml")
+
 
 
 
