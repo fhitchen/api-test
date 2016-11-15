@@ -67,7 +67,7 @@
           (recur (zip/next z)))))))
 
 
-;(print-values "create-subscriber.xml")
+(print-values "bottom.xml")
 
 
 

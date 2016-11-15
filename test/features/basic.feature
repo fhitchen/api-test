@@ -55,11 +55,11 @@ Feature: Create Boost BAN followed by Subscriber
      | tag                                                                   | content                   |
      | "NXHeader>Version" | "0102" |
      | "NXHeader>ServiceName" | "AMD.ENSEMBLE.ADD_SUB_INFO" |
-	| "NXHeader>ServiceVer" | "0102" |
-	| "NXHeader>DialogType" | "2" |
-	| "NXHeader>DialogRef" | "4BN" |
-	| "NXHeader>ApplRef" | "4BN" |
-	| "NXHeader>ApplGroup" | "4BN" |
+     | "NXHeader>ServiceVer" | "0102" |
+     | "NXHeader>DialogType" | "2" |
+     | "NXHeader>DialogRef" | "4BN" |
+     | "NXHeader>ApplRef" | "4BN" |
+     | "NXHeader>ApplGroup" | "4BN" |
 	| "NXHeader>ContentType" | "XML" |
 	| "NXHeader>ReqSentTime" | "2016/09/09 00:58:52" |
 	| "createSubscriber>banInfo>banId" | "$StoredBoostBan" |
@@ -67,7 +67,7 @@ Feature: Create Boost BAN followed by Subscriber
 	| "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>numberLocation" | "REG" |
 	| "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>ptnType" | "RGL" |
 	| "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>method" | "R" |
-	| "createSubscriber>subscriberApiInfo>resourceApiInfo>npaNxxInfo>npa" | "408" |
+	| "createSubscriber>subscriberApiInfo>resourceApiInfo>npaNxxInfo>npa" | "303" |
 	| "createSubscriber>subscriberApiInfo>resourceApiInfo>npaNxxInfo>ngp" | "SFRCBL408" |
 	| "createSubscriber>subscriberApiInfo>resourceApiInfo>naiInfo>naiInd" | "Y" |
 	| "createSubscriber>subscriberApiInfo>subAdditionalInfo>dealerAgent" | "ZEABV00X" |
@@ -92,7 +92,7 @@ Feature: Create Boost BAN followed by Subscriber
 	| "createSubscriber>applicationDataInfo>applicationID" | "FAST" |
 
      When we receive the response
-     Then the message header response value named "NXHeader>ReplyCompCode" must equal "0" 
+     Then the message header response value named "NXHeader>ReplyCompCode" must equal "8" 
 
 
      Given the message "create_ban.xml" with the following values:
