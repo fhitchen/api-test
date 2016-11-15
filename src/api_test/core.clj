@@ -23,7 +23,7 @@
             (assoc-in % [:content] (get-stored-value (keyword v) )))
           %) values))
 
-;(update-stored-value {:$BANID "nine" })
+(class (update-stored-value {:$BANID "nine" }))
 ;(get-stored-value :$BANID)
 ;(replace-variables test-values)
 
