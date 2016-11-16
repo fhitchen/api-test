@@ -4,6 +4,8 @@
 (def x-values (atom []))
 (def response (atom ""))
 (def stored-values (atom (hash-map)))
+(def message (atom ""))
+
 
 (defn update-stored-value
   [value]

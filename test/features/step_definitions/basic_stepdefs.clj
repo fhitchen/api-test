@@ -7,16 +7,17 @@
   (comment  Write code here that turns the phrase above into concrete actions  )
   (throw (cucumber.api.PendingException.)))
 
-
-
-
-
-
 (Given #"^the message \"([^\"]*)\" with the following values:$" [message-file data]
        (reset! x-values (table->rows data))
-       (let [message (set-values (replace-variables (table->rows data)) (slurp (str "resources/messages/" message-file)))]
-         ;(println message)
-         (mq-send message)))
+       ;(println (pr-str "x-values= " (table->rows data)))
+       (reset! message (set-values (table->rows data) (slurp (str "resources/messages/" message-file)))))
+
+(Given #"^we send the message$" []
+       (mq-send @message))
+
+(Given #"^we send the message with the following modified values:$" [data]
+       (let [m (set-values (table->rows data) @message)]
+         (mq-send m)))
 
 (When #"^we receive the response$" []
       (reset! response (mq-receive))
@@ -24,7 +25,6 @@
 
 (Then #"^the message header response value named \"([^\"]*)\" must equal \"([^\"]*)\"$" [arg1 arg2]
       (let [value (get-value arg1 (.getText @response))]
-        (println (.getText @response))
         (assert (= (str arg2) value))))
 
 (Then #"^the message body response value named \"([^\"]*)\" should be (\d+) characters long$" [arg1 length]
@@ -36,8 +36,6 @@
 
 (Then #"^store the \"([^\"]*)\" value in variable \"([^\"]*)\"$" [tag variable-name]
       (update-stored-value {(keyword variable-name) (get-value tag (.getText @response))}))
-
-
 
 (Given #"^message add-subscriber\.xml$" []
   (comment  Write code here that turns the phrase above into concrete actions  )
