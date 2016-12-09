@@ -46,7 +46,7 @@ Feature: Create ASW BAN
      | "createBan>applicationDataInfo>applicationID"                         | "API"                     |
 
      Given we send the message
-     When we receive the response
+     When we receive the good response
      Then the message header response value named "NXHeader>ReplyCompCode" must equal "0" 
      And the message header response value named "NXHeader>ServiceName" must equal "AMD.ENSEMBLE.CREATE_BAN"
      And the message body response value named "createBan>CreateBanRespInfo>banId" should be 9 characters long
@@ -95,7 +95,7 @@ Feature: Create ASW BAN
      | "createBan>applicationDataInfo>applicationID"                         | "API"                     |
 
      Given we send the message
-     When we receive the response
+     When we receive the bad response
      Then the message header response value named "NXHeader>ReplyCompCode" must equal "8" 
      And the message header response value named "NXHeader>ServiceName" must equal "AMD.ENSEMBLE.CREATE_BAN"
      And the response message tag named "createBan>message" contains the text "The system was unable to determine the market based on the zip code supplied"

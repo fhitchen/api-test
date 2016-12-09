@@ -29,12 +29,12 @@ Feature: Create Boost BAN followed by Subscriber
      | "createBan>banValueObjInfo>banIndividualInfo>employeeHireDate"        | "09/10/2006"              |
      | "createBan>banValueObjInfo>billingAddressInfo>applyAddress"           | "S"                       |
      | "createBan>banValueObjInfo>billingAddressInfo>type"                   | "S"                       |
+     | "createBan>banValueObjInfo>billingAddressInfo>number"                 | "2109"                    |
      | "createBan>banValueObjInfo>billingAddressInfo>streetName"             | "fox drive"               |
      | "createBan>banValueObjInfo>billingAddressInfo>city"                   | "Champaign"               |
      | "createBan>banValueObjInfo>billingAddressInfo>state"                  | "IL"                      |
      | "createBan>banValueObjInfo>billingAddressInfo>country"                | "USA"                     |
      | "createBan>banValueObjInfo>billingAddressInfo>zipCode"                | "61820"                   |
-     | "createBan>banValueObjInfo>billingAddressInfo>number"                 | "2109"                    |
      | "createBan>banValueObjInfo>contactNameInfo>first"                     | "Boost"                   |
      | "createBan>banValueObjInfo>contactNameInfo>last"                      | "Apiauto"                 |
      | "createBan>banValueObjInfo>billingNameInfo>first"                     | "Boost"                   |
@@ -45,7 +45,7 @@ Feature: Create Boost BAN followed by Subscriber
 
    Scenario:
      Given we send the message 
-     When we receive the response
+     When we receive the good response
      Then the message header response value named "NXHeader>ReplyCompCode" must equal "0" 
      And the message header response value named "NXHeader>ServiceName" must equal "AMD.ENSEMBLE.CREATE_BAN"
      And the message body response value named "createBan>CreateBanRespInfo>banId" should be 9 characters long
@@ -57,7 +57,7 @@ Feature: Create Boost BAN followed by Subscriber
      | tag                                                                   | content                   |
      | "createBan>banValueObjInfo>banDetailsInfo>ssn"                        | "AAAAAAAAA"               |
      
-     When we receive the response
+     When we receive the bad response
      Then the message header response value named "NXHeader>ReplyCompCode" must equal "8"
      And the message header response value named "NXHeader>ServiceName" must equal "AMD.ENSEMBLE.CREATE_BAN"
      And the response message tag named "exception" contains the text "XML Parsing error"
@@ -68,7 +68,7 @@ Feature: Create Boost BAN followed by Subscriber
      | tag                                                                   | content                   |
      | "createBan>banValueObjInfo>banDetailsInfo>ssn"                        | "999999998"               |
      
-     When we receive the response
+     When we receive the bad response
      Then the message header response value named "NXHeader>ReplyCompCode" must equal "8" 
      And the message header response value named "NXHeader>ServiceName" must equal "AMD.ENSEMBLE.CREATE_BAN"
      And the response message tag named "createBan>message" contains the text "An individual account cannot share an SSN with another BAN."
@@ -115,7 +115,7 @@ Feature: Create Boost BAN followed by Subscriber
 	| "createSubscriber>applicationDataInfo>applicationID" | "FAST" |
 
      Given we send the message
-     When we receive the response
+     When we receive the bad response
      Then the message header response value named "NXHeader>ReplyCompCode" must equal "8" 
 
 
