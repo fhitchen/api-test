@@ -24,6 +24,93 @@
 
 ;(println (pr-str test-values))
 
+(def test-request "<?xml version='1.0'?><newPpSocInfo>
+          <pricePlanSocCode>PGCDM1090</pricePlanSocCode>
+          <featureApiInfoList>
+            <FeatureApiInfo>
+              <featureCode>CHSDA</featureCode>
+            </FeatureApiInfo>
+            <FeatureApiInfo>
+              <featureCode>CLIP</featureCode>
+            </FeatureApiInfo>
+            <!--FeatureApiInfo>
+              <featureCode>HLT</featureCode>
+            </FeatureApiInfo>
+            <FeatureApiInfo>
+              <featureCode>INT</featureCode>
+            </FeatureApiInfo>
+            <FeatureApiInfo>
+              <featureCode>SMS</featureCode>
+            </FeatureApiInfo>
+            <FeatureApiInfo>
+              <featureCode>STD</featureCode>
+            </FeatureApiInfo>
+            <FeatureApiInfo>
+              <featureCode>TWAYR</featureCode>
+            </FeatureApiInfo>
+            <FeatureApiInfo>
+              <featureCode>UNTETH</featureCode>
+            </FeatureApiInfo-->
+          </featureApiInfoList>
+        </newPpSocInfo>
+")
+
+
+(def test-request "<?xml version='1.0'?><e>
+          <a>PGCDM1090</a>
+          <b>
+            <c>
+              <d>CHSDA</d>
+            </c>
+            <c>
+              <d>CLIP</d>
+            </c>
+            <!--FeatureApiInfo>
+              <featureCode>HLT</featureCode>
+            </FeatureApiInfo>
+            <FeatureApiInfo>
+              <featureCode>INT</featureCode>
+            </FeatureApiInfo>
+            <FeatureApiInfo>
+              <featureCode>SMS</featureCode>
+            </FeatureApiInfo>
+            <FeatureApiInfo>
+              <featureCode>STD</featureCode>
+            </FeatureApiInfo>
+            <FeatureApiInfo>
+              <featureCode>TWAYR</featureCode>
+            </FeatureApiInfo>
+            <FeatureApiInfo>
+              <featureCode>UNTETH</featureCode>
+            </FeatureApiInfo-->
+          </b>
+        </e>
+")
+
+
+(def zipper (zip/xml-zip (parse test-request)))
+
+
+(defn test-set-values
+  "given a lazy sequence of cucumber table values of :tag path and :content reset the :content of the matching paths in the message"
+  [values message]
+  (loop [zipper (zip/xml-zip (parse message)) line values]
+    (if (= () line)
+      (xml/indent-str (zip/root zipper))
+      (do
+        (let [paths (str/split (:tag (first line)) #">")
+              matches (map #(zx/tag= (keyword %)) paths)
+              edit { :tag (keyword (last paths)) :content (:content (first line)) }
+              new-loc (apply zx/xml-> zipper matches)]
+          (println (class new-loc) " : " new-loc)
+          (let [loc (if (not= nil new-loc)
+                      (zip/root (zip/replace new-loc edit))
+                      (zip/root zipper))]
+            (recur (zip/xml-zip loc) (rest line))))))))
+
+(pr (test-set-values  (lazy-seq '({:tag "a" :content "arglebargle" }
+                              {:tag "b>c>d" :content "foo" }
+                              {:tag "b>c>d" :content "bar" })) test-request))
 
 (defn set-values
   "given a lazy sequence of cucumber table values of :tag path and :content reset the :content of the matching paths in the message"
