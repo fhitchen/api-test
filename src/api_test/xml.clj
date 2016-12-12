@@ -94,23 +94,52 @@
 (defn test-set-values
   "given a lazy sequence of cucumber table values of :tag path and :content reset the :content of the matching paths in the message"
   [values message]
-  (loop [zipper (zip/xml-zip (parse message)) line values]
+  (loop [zipper (zip/xml-zip (parse message)) line (reduce-by :tag #(conj %1 (:content %2)) [] values)]
     (if (= () line)
       (xml/indent-str (zip/root zipper))
       (do
-        (let [paths (str/split (:tag (first line)) #">")
+        (println "line=" line)
+        (let [paths (str/split (key (first line)) #">")
               matches (map #(zx/tag= (keyword %)) paths)
-              edit { :tag (keyword (last paths)) :content (:content (first line)) }
+              ;edit { :tag (keyword (last paths)) :content (:content (first line)) }
+              edits (val (first line))
               new-loc (apply zx/xml-> zipper matches)]
-          (println (class new-loc) " : " new-loc)
-          (let [loc (if (not= nil new-loc)
-                      (zip/root (zip/replace new-loc edit))
+          (println "first= " (first new-loc))
+          (println "second=" (second new-loc))
+          (let [loc (if (not= () new-loc)
+                      (do
+                        ;(println "new-loc="  new-loc)
+                        ;(zip/root (zip/replace (first new-loc) {:tag (keyword (last paths)) :content (val (first line))})))
+                        (zip/root (map #(zip/replace %1 {:tag (keyword (last paths)) :content (val %2)}) new-loc edits)))
                       (zip/root zipper))]
             (recur (zip/xml-zip loc) (rest line))))))))
 
 (pr (test-set-values  (lazy-seq '({:tag "a" :content "arglebargle" }
                               {:tag "b>c>d" :content "foo" }
                               {:tag "b>c>d" :content "bar" })) test-request))
+
+
+
+(def myvals (lazy-seq '({:tag "a" :content "arglebargle" }
+                              {:tag "b>c>d" :content "foo" }
+                              {:tag "b>c>d" :content "bar" })))
+
+(defn reduce-by [key-fn f init coll]
+  (reduce (fn [summaries x]
+            (let [k (key-fn x)]
+              (assoc summaries k (f (summaries k init ) x))))
+          {} coll))
+
+(def rdcd (reduce-by :tag #(conj %1 (:content %2)) [] myvals))
+
+(pr rdcd)
+(pr  (second rdcd))
+
+(for [line rdcd]
+  (do
+    (pr (key line))
+    (pr (val line))))
+
 
 (defn set-values
   "given a lazy sequence of cucumber table values of :tag path and :content reset the :content of the matching paths in the message"
