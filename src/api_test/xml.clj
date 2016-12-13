@@ -90,39 +90,65 @@
 
 (def zipper (zip/xml-zip (parse test-request)))
 
+(def match (map #(zx/tag= %) '(:b :c :d)))
+(pr match)
+(pr (class match))
+
+(def content '("CLIP" "foo"))
+
+(pr (first content))
+
+(def big-match (concat match (map #(zx/text= %) (list (first content)))))
+(pr (count big-match))
+(pr big-match)
+(println (apply zx/xml-> zipper
+           big-match))
+
+
 
 (defn test-set-values
   "given a lazy sequence of cucumber table values of :tag path and :content reset the :content of the matching paths in the message"
   [values message]
-  (loop [zipper (zip/xml-zip (parse message)) line (reduce-by :tag #(conj %1 (:content %2)) [] values)]
+  (loop [zipper (zip/xml-zip (parse message)) line values]
     (if (= () line)
+
       (xml/indent-str (zip/root zipper))
       (do
         (println "line=" line)
-        (let [paths (str/split (key (first line)) #">")
-              matches (map #(zx/tag= (keyword %)) paths)
-              ;edit { :tag (keyword (last paths)) :content (:content (first line)) }
-              edits (val (first line))
+        (let [paths (str/split (:tag (first line)) #">")
+              m (map #(zx/tag= (keyword %)) paths)
+              c (str/split (:content (first line)) #">")
+              content (if (= (count c) 2)
+                        (last c)
+                        (first c))
+              _ (println (str paths " C=" c "Content=" content "M=" (first c) ":" (count (first c))))
+              matches (if (= (count c) 2)
+                        (concat m (map #(zx/text= %) (list (first c))))
+                        m)
+              _ (println "COUNT OF MATCHES = " (count matches))
+              edit { :tag (keyword (last paths)) :content content }
               new-loc (apply zx/xml-> zipper matches)]
-          (println "first= " (first new-loc))
-          (println "second=" (second new-loc))
+          (if (= 0 (count new-loc))
+            (println "WARNING: " (first line) " NOT FOUND"))
           (let [loc (if (not= () new-loc)
                       (do
-                        ;(println "new-loc="  new-loc)
-                        ;(zip/root (zip/replace (first new-loc) {:tag (keyword (last paths)) :content (val (first line))})))
-                        (zip/root (map #(zip/replace %1 {:tag (keyword (last paths)) :content (val %2)}) new-loc edits)))
+                        (println "edits="  edit)
+                        (zip/root (zip/replace new-loc edit)))
                       (zip/root zipper))]
             (recur (zip/xml-zip loc) (rest line))))))))
 
 (pr (test-set-values  (lazy-seq '({:tag "a" :content "arglebargle" }
-                              {:tag "b>c>d" :content "foo" }
-                              {:tag "b>c>d" :content "bar" })) test-request))
+                              {:tag "b>c>d":content "CHSDA>foo" }
+                              {:tag "b>c>d":content "CLIP>bar" })) test-request))
 
 
 
 (def myvals (lazy-seq '({:tag "a" :content "arglebargle" }
                               {:tag "b>c>d" :content "foo" }
                               {:tag "b>c>d" :content "bar" })))
+
+
+
 
 (defn reduce-by [key-fn f init coll]
   (reduce (fn [summaries x]
@@ -134,7 +160,7 @@
 
 (pr rdcd)
 (pr  (second rdcd))
-
+`
 (for [line rdcd]
   (do
     (pr (key line))
