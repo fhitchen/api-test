@@ -65,24 +65,24 @@
             <c>
               <d>CLIP</d>
             </c>
-            <!--FeatureApiInfo>
-              <featureCode>HLT</featureCode>
-            </FeatureApiInfo>
-            <FeatureApiInfo>
-              <featureCode>INT</featureCode>
-            </FeatureApiInfo>
-            <FeatureApiInfo>
-              <featureCode>SMS</featureCode>
-            </FeatureApiInfo>
-            <FeatureApiInfo>
-              <featureCode>STD</featureCode>
-            </FeatureApiInfo>
-            <FeatureApiInfo>
-              <featureCode>TWAYR</featureCode>
-            </FeatureApiInfo>
-            <FeatureApiInfo>
-              <featureCode>UNTETH</featureCode>
-            </FeatureApiInfo-->
+            <c>
+              <d>HLT</d>
+            </c>
+            <c>
+              <d>INT</d>
+            </c>
+            <c>
+              <d>SMS</d>
+            </c>
+            <c>
+              <d>STD</d>
+            </c>
+            <c>
+              <d>TWAYR</d>
+            </c>
+            <c>
+              <d>UNTETH</d>
+            </c>
           </b>
         </e>
 ")
@@ -93,10 +93,10 @@
 (def fmatch (map #(zx/tag= %) '(:x)))
 (def match (map #(zx/tag= %) '(:b :c :d)))
 
-(def content '("CHSDA" "foo"))
+(def content '("UNTETH" "foo"))
 
 (def big-match (concat match (map #(zx/text= %) (list (first content)))))
-;(println (apply zx/xml-> zipper fmatch))
+(println (apply zx/xml-> zipper big-match))
 
 
 
@@ -107,7 +107,7 @@
     (if (= () line)
       (xml/indent-str (zip/root zipper))
       (do
-        (println "ziper=" zipper)
+        ;(println "ziper=" zipper)
         (let [paths (str/split (:tag (first line)) #">")
               m (map #(zx/tag= (keyword %)) paths)
               c (str/split (:content (first line)) #">")
@@ -119,9 +119,9 @@
                         m)
               edit { :tag (keyword (last paths)) :content content }
               new-loc (apply zx/xml1-> zipper matches)]
-          (if (= nil new-loc) 
+          (if (nil? new-loc) 
             (println "WARNING: " (first line) " NOT FOUND"))
-          (let [loc (if (not= nil new-loc)
+          (let [loc (if-not (nil? new-loc)
                       (do
                         (zip/root (zip/replace new-loc edit)))
                       (do
@@ -129,10 +129,11 @@
             (recur (zip/xml-zip loc) (rest line))))))))
 
 
-(comment (test-set-values  (lazy-seq '({:tag "a" :content "arglebargle" }
+(println (set-values  (lazy-seq '({:tag "a" :content "arglebargle" }
                                   {:tag "b>c>d" :content "CHSDA>foo" }
                                   {:tag "b>c>d" :content "CLIP>bar" }
-                                  {:tag "x" :content "y"})) test-request))
+                                  {:tag "x" :content "y"}
+                                  {:tag "b>c>d" :content "UNTETH>baz"})) test-request))
 
 
 
