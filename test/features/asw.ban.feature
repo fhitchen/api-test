@@ -62,7 +62,7 @@ Feature: Create ASW BAN
      When we receive the good response
      Then the message header response value named "NXHeader>ReplyCompCode" must equal "0" 
      And the message header response value named "NXHeader>ServiceName" must equal "AMD.ENSEMBLE.CREATE_BAN"
-     And the response message tag named "createBan>message" contains the text "The system was unable to determine the market based on the zip code supplied"
+#    And the response message tag named "createBan>message" contains the text "The system was unable to determine the market based on the zip code supplied"
 
      
 

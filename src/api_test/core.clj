@@ -31,6 +31,10 @@
   []
   (format "26840000000%07d" (rand-int 9999999)))
 
+(defn generate-applref
+  "Generate a ramdon ApplRef"
+  [] (str (java.util.UUID/randomUUID)))
+
 ;(class (update-stored-value {:$BANID "nine" }))
 ;(get-stored-value :$BANID)
 ;(replace-variables test-values)

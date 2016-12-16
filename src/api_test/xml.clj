@@ -13,8 +13,6 @@
    (ByteArrayInputStream.
     (.getBytes (.trim string)))))
 
-(defn uuid [] (str (java.util.UUID/randomUUID)))
-
 ;(def test-response "<?xml version='1.0'?><response><NXHeader><Version></Version><ServiceName>AMD.ENSEMBLE.CREATE_BAN</ServiceName><ApplRef>1477923078_BOOST_BAN</ApplRef><ReplyCompCode>0</ReplyCompCode></NXHeader><header></header><createBan><CreateBanRespInfo><banId>754776797</banId></CreateBanRespInfo></createBan></response>")
 
 (;def test-values (lazy-seq '({:content "888888888", :tag

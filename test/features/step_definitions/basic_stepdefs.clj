@@ -6,7 +6,8 @@
 
 
 (Before []
-        (update-stored-value {(keyword "$ESN") (generate-esn)}))
+        (update-stored-value {(keyword "$ESN") (generate-esn)})
+        (update-stored-value {(keyword "$ApplRef") (generate-applref)}))
 
 (Given #"^the message \"([^\"]*)\" with the following values:$" [message-file data]
        (reset! x-values (table->rows data))
