@@ -96,7 +96,7 @@
 (def content '("UNTETH" "foo"))
 
 (def big-match (concat match (map #(zx/text= %) (list (first content)))))
-(println (apply zx/xml-> zipper big-match))
+;(println (apply zx/xml-> zipper big-match))
 
 
 
@@ -129,7 +129,7 @@
             (recur (zip/xml-zip loc) (rest line))))))))
 
 
-(println (set-values  (lazy-seq '({:tag "a" :content "arglebargle" }
+(comment (set-values  (lazy-seq '({:tag "a" :content "arglebargle" }
                                   {:tag "b>c>d" :content "CHSDA>foo" }
                                   {:tag "b>c>d" :content "CLIP>bar" }
                                   {:tag "x" :content "y"}

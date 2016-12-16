@@ -1,9 +1,12 @@
 (ns api-test.core
+  (:require [api-test.xml :as x])
   (:gen-class))
 
 (def x-values (atom []))
 (def response (atom ""))
 (def stored-values (atom (hash-map)))
+(def message (atom ""))
+
 
 (defn update-stored-value
   [value]
@@ -23,16 +26,21 @@
             (assoc-in % [:content] (get-stored-value (keyword v) )))
           %) values))
 
-(class (update-stored-value {:$BANID "nine" }))
+(defn generate-esn
+  "Generate a random esn"
+  []
+  (format "26840000000%07d" (rand-int 9999999)))
+
+;(class (update-stored-value {:$BANID "nine" }))
 ;(get-stored-value :$BANID)
 ;(replace-variables test-values)
 
 ;(assoc-in {:content "$BANID" :tag "xxx" } [:content] "9999")
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  ""
   [& args]
-  (println "Hello, World!"))
+  (println (x/print-values (first args))))
 
 
 

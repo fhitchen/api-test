@@ -67,9 +67,11 @@
 ;; Change them according to your environment (the message can be supplied in the cli)
 (def mq-qm "QM1")             ; MQ queue manager name
 (def mq-channel "SYSTEM.ADMIN.SVRCONN")  ; MQ channel name
-(def mq-port 32768)                  ; MQ port
+(def mq-port 32796)                       ; MQ port
 (def mq-queue "REQUEST_QUEUE")       ; MQ queue name
+(def mq-response-queue "RESPONSE_QUEUE")
 (def mq-host "cmildev136")          ; MQ server
+;(def mq-host "cmildev38")          ; MQ server
 (def mq-message (if (seq (first *command-line-args*)) ; Message, either the first 
                   (first *command-line-args*)         ; command line argument of a snippet from Pessoa's
                   "My soul is like a shepherd. It knows wind and sun, walking hand in hand with the Seasons"))
@@ -86,13 +88,16 @@
       (.setChannel channel))
     connection-factory))
 
-(defn- mq-send-message [connection-factory queue message]
+(defn- mq-send-message [connection-factory queue response-queue message]
   "Sends MESSAGE, a string, to the QUEUE using CONNECTION-FACTORY"
   (let [conn (.createQueueConnection connection-factory)
         session (.createQueueSession conn false Session/AUTO_ACKNOWLEDGE)
         queue (.createQueue session (str "queue:///" queue))
         sender (.createSender session queue)
-        message (.createTextMessage session message)]
+        message (.createTextMessage session message)
+        rq (.createQueue session (str "queue:///" response-queue))]
+    ;(set! (. message replyToQueueName) mq-response-queue)
+    (.setJMSReplyTo message rq)
     (.start conn)
     (.send sender message)
     (.close sender)
@@ -109,7 +114,7 @@
         receiver (.createReceiver session queue) 
         message (.createTextMessage session "dummy")]
     (.start conn)
-    (let [message (.receive receiver 5000)]
+    (let [message (.receive receiver 30000)]
       (.close receiver)
       (.close conn)
       ;(println (str (java.util.Date.) " : Reveived message " message "\nfrom " queue))
@@ -124,7 +129,7 @@
                                               :transport JMSC/MQJMS_TP_CLIENT_MQ_TCPIP
                                               :qm mq-qm
                                               :channel mq-channel})]
-    (mq-send-message mq-connection mq-queue message)))
+    (mq-send-message mq-connection mq-queue mq-response-queue message)))
 
 (defn mq-receive
   "Function to receive message"
@@ -135,12 +140,15 @@
                                               :transport JMSC/MQJMS_TP_CLIENT_MQ_TCPIP
                                               :qm mq-qm
                                               :channel mq-channel})]
-    (mq-receive-message mq-connection "RESPONSE_QUEUE")))
+    (mq-receive-message mq-connection mq-response-queue)))
 
 
 ;; Just send it already
 ;(mq-example)
 ;(mq-receive)
+
+
+
 
 
 
