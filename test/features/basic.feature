@@ -1,11 +1,14 @@
 Feature: Create Boost BAN followed by Subscriber
 
+  Rules:
+  - the ApplRef in the request must match the ApplRef in the response.
+
   Background:   
      Given the message "create_ban.xml" with the following values:
      
      | tag                                                                   | content                   |
      | "NXHeader>ServiceName"                                                | "AMD.ENSEMBLE.CREATE_BAN" |
-     | "NXHeader>ApplRef"                                                    | "1477923078_BOOST_BAN"    |
+     | "NXHeader>ApplRef"                                                    | "$ApplRef"                |
      | "createBan>banValueObjInfo>banTypeInfo>banType"                       | "I"                       |
      | "createBan>banValueObjInfo>banTypeInfo>banSubType"                    | "C"                       |
      | "createBan>banValueObjInfo>banTypeInfo>serviceZipCode"                | "61820"                   |
@@ -73,46 +76,47 @@ Feature: Create Boost BAN followed by Subscriber
      And the message header response value named "NXHeader>ServiceName" must equal "AMD.ENSEMBLE.CREATE_BAN"
      And the response message tag named "createBan>message" contains the text "An individual account cannot share an SSN with another BAN."
      
+   Scenario: Create a subscriber
      Given the message "create-subscriber.xml" with the following values:
 
-     | tag                                                                   | content                   |
-     | "NXHeader>Version" | "0102" |
-     | "NXHeader>ServiceName" | "AMD.ENSEMBLE.ADD_SUB_INFO" |
-     | "NXHeader>ServiceVer" | "0102" |
-     | "NXHeader>DialogType" | "2" |
-     | "NXHeader>DialogRef" | "4BN" |
-     | "NXHeader>ApplRef" | "4BN" |
-     | "NXHeader>ApplGroup" | "4BN" |
-	| "NXHeader>ContentType" | "XML" |
-	| "NXHeader>ReqSentTime" | "2016/09/09 00:58:52" |
-	| "createSubscriber>banInfo>banId" | "$StoredBoostBan" |
-	| "createSubscriber>subscriberApiInfo>networkInfo>networkInd" | "C" |
-	| "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>numberLocation" | "REG" |
-	| "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>ptnType" | "RGL" |
-	| "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>method" | "R" |
-	| "createSubscriber>subscriberApiInfo>resourceApiInfo>npaNxxInfo>npa" | "303" |
-	| "createSubscriber>subscriberApiInfo>resourceApiInfo>npaNxxInfo>nxx" | "408" |
-	| "createSubscriber>subscriberApiInfo>resourceApiInfo>naiInfo>naiInd" | "Y" |
-	| "createSubscriber>subscriberApiInfo>subAdditionalInfo>dealerAgent" | "ZEABV00X" |
-	| "createSubscriber>subscriberApiInfo>subAdditionalInfo>oarssInd" | "false" |
-	| "createSubscriber>subscriberApiInfo>ldcInfo>ldcCode" | "NXTL" |
-	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>pricePlanSocCode" | "MUCX1350" |
-	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "CHSDA>CHSDA" |
-	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "CLIP>CLIP" |
-	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "HLT>HLT" |
-	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "INT>INT" |
-	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "PM>PM" |
-	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "SMS>SMS" |
-	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "STD>STD" |
-	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "UNTETH>UNTETH" |
-	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>otherSocInfoList>SocInfo>pricePlanSocCode" | "VMENGLISH" |
-	| "createSubscriber>subscriberApiInfo>newPricePlanInfo>otherSocInfoList>SocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "VMC9" |
-	| "createSubscriber>subscriberApiInfo>equipmentApiInfoList>EquipmentApiInfo>itemId" | "AL2017BAVB" |
-	| "createSubscriber>subscriberApiInfo>equipmentApiInfoList>EquipmentApiInfo>serial" | "$ESN" |
-	| "createSubscriber>subscriberApiInfo>equipmentApiInfoList>EquipmentApiInfo>serialType" | "E" |
-	| "createSubscriber>subscriberApiInfo>equipmentApiInfoList>EquipmentApiInfo>activateInd" | "Y" |
-	| "createSubscriber>subscriberApiInfo>memoInfo>memoSource" | "F" |
-	| "createSubscriber>applicationDataInfo>applicationID" | "FAST" |
+     | tag                                                                                                              | content                   |
+     | "NXHeader>Version"                                                                                               | "0102" |
+     | "NXHeader>ServiceName"                                                                                           | "AMD.ENSEMBLE.ADD_SUB_INFO" |
+     | "NXHeader>ServiceVer"                                                                                            | "0102" |
+     | "NXHeader>DialogType"                                                                                            | "2" |
+     | "NXHeader>DialogRef"                                                                                             | "4BN" |
+     | "NXHeader>ApplRef"                                                                                               | "$ApplRef" |
+     | "NXHeader>ApplGroup"                                                                                             | "4BN" |
+     | "NXHeader>ContentType"                                                                                           | "XML" |
+     | "NXHeader>ReqSentTime"                                                                                           | "2016/09/09 00:58:52" |
+     | "createSubscriber>banInfo>banId"                                                                                 | "$StoredBoostBan" |
+     | "createSubscriber>subscriberApiInfo>networkInfo>networkInd"                                                      | "C" |
+     | "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>numberLocation"                                      | "REG" |
+     | "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>ptnType"                                             | "RGL" |
+     | "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>method"                                              | "R" |
+     | "createSubscriber>subscriberApiInfo>resourceApiInfo>npaNxxInfo>npa"                                              | "303" |
+     | "createSubscriber>subscriberApiInfo>resourceApiInfo>npaNxxInfo>ngp"                                              | "SFRCBL408" |
+     | "createSubscriber>subscriberApiInfo>resourceApiInfo>naiInfo>naiInd"                                              | "Y" |
+     | "createSubscriber>subscriberApiInfo>subAdditionalInfo>dealerAgent"                                               | "ZEABV00X" |
+     | "createSubscriber>subscriberApiInfo>subAdditionalInfo>oarssInd"                                                  | "false" |
+     | "createSubscriber>subscriberApiInfo>ldcInfo>ldcCode"                                                             | "NXTL" |
+     | "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>pricePlanSocCode"                              | "MUCX1350" |
+     | "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "CHSDA>CHSDA" |
+     | "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "CLIP>CLIP" |
+     | "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "HLT>HLT" |
+     | "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "INT>INT" |
+     | "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "PM>PM" |
+     | "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "SMS>SMS" |
+     | "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "STD>STD" |
+     | "createSubscriber>subscriberApiInfo>newPricePlanInfo>newPpSocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "UNTETH>UNTETH" |
+     | "createSubscriber>subscriberApiInfo>newPricePlanInfo>otherSocInfoList>SocInfo>pricePlanSocCode"                              | "VMENGLISH" |
+     | "createSubscriber>subscriberApiInfo>newPricePlanInfo>otherSocInfoList>SocInfo>featureApiInfoList>FeatureApiInfo>featureCode" | "VMC9" |
+     | "createSubscriber>subscriberApiInfo>equipmentApiInfoList>EquipmentApiInfo>itemId"                                            | "AL2017BAVB" |
+     | "createSubscriber>subscriberApiInfo>equipmentApiInfoList>EquipmentApiInfo>serial"                                            | "$ESN" |
+     | "createSubscriber>subscriberApiInfo>equipmentApiInfoList>EquipmentApiInfo>serialType"                                        | "E" |
+     | "createSubscriber>subscriberApiInfo>equipmentApiInfoList>EquipmentApiInfo>activateInd"                                       | "Y" |
+     | "createSubscriber>subscriberApiInfo>memoInfo>memoSource"                                                                     | "F" |
+     | "createSubscriber>applicationDataInfo>applicationID"                                                                         | "FAST" |
 
      Given we send the message
      When we receive the bad response

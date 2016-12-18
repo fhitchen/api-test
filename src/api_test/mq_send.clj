@@ -1,4 +1,5 @@
-(ns api-test.mq-send)
+(ns api-test.mq-send
+  (:use [api-test.xml :only (get-value)]))
 ;; Simple example of sending a message to Websphere MQ with Clojure
 ;;
 ;; Uses the Websphere MQ JMS classes (i.e. JMS-like in API, but
@@ -133,25 +134,19 @@
 
 (defn mq-receive
   "Function to receive message"
-  [& args]
+  [correlation-id]
   (let [mq-connection (mq-connection-factory {:host mq-host
                                               :port mq-port
                                               ;:transport JMSC/MQJMS_TP_CLIENT_MQ_TCPIP
                                               :transport JMSC/MQJMS_TP_CLIENT_MQ_TCPIP
                                               :qm mq-qm
                                               :channel mq-channel})]
-    (mq-receive-message mq-connection mq-response-queue)))
-
-
-;; Just send it already
-;(mq-example)
-;(mq-receive)
-
-
-
-
-
-
-
-
-;;;; End of file
+    (loop [response (mq-receive-message mq-connection mq-response-queue)]
+      (if (or (= nil response)
+              (= correlation-id (get-value "NXHeader>ApplRef" (.getText response))))
+        (do
+          ;(println (str "Waiting for ApplRef " correlation-id " got " (get-value "NXHeader>ApplRef" (.getText response))))
+          response)
+        (do
+          (println (str "Waiting for ApplRef " correlation-id " got " (get-value "NXHeader>ApplRef" (.getText response)) " instead!"))
+          (recur (mq-receive-message mq-connection mq-response-queue)))))))

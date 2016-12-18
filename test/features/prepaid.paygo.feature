@@ -5,7 +5,7 @@ Feature: Create Prepaid BAN followed by Subscriber
      
      | tag                                                                   | content                   |
      | "NXHeader>ServiceName"                                                | "AMD.ENSEMBLE.CREATE_BAN" |
-     | "NXHeader>ApplRef"                                                    | "1477923078_BOOST_BAN"    |
+     | "NXHeader>ApplRef"                                                    | "$ApplRef"                |
      | "createBan>banValueObjInfo>banTypeInfo>banType"                       | "I"                       |
      | "createBan>banValueObjInfo>banTypeInfo>banSubType"                    | "C"                       |
      | "createBan>banValueObjInfo>banTypeInfo>serviceZipCode"                | "61820"                   |
@@ -79,7 +79,7 @@ Feature: Create Prepaid BAN followed by Subscriber
      | tag                                                                   | content                   |
         | "NXHeader>Version" | "Hilik CR566 Step1" |
         | "NXHeader>ServiceName" | "AMD.ENSEMBLE.ADD_SUB_INFO" |
-        | "NXHeader>ApplRef" | "1477675729_PYG_BAN" |
+        | "NXHeader>ApplRef" | "$ApplRef" |
         | "createSubscriber>banInfo>banId" | "$StoredBoostBan" |
         | "createSubscriber>subscriberApiInfo>networkInfo>networkInd" | "C" |
         | "createSubscriber>subscriberApiInfo>resourceApiInfo>ptnInfo>numberLocation" | "REG" |

@@ -5,7 +5,7 @@ Feature: Create ASW BAN
      
      | tag                                                                   | content                   |
      | "NXHeader>ServiceName"                                                | "AMD.ENSEMBLE.CREATE_BAN" |
-     | "NXHeader>ApplRef"                                                    | "First ASW Message"       |
+     | "NXHeader>ApplRef"                                                    | "$ApplRef"                |
      | "createBan>banValueObjInfo>banTypeInfo>banType"                       | "I"                       |
      | "createBan>banValueObjInfo>banTypeInfo>banSubType"                    | "K"                       |
      | "createBan>banValueObjInfo>banTypeInfo>serviceZipCode"                | "61820"                   |
@@ -56,7 +56,7 @@ Feature: Create ASW BAN
      Given we send the message with the following modified values:
      
      | tag                                                                   | content                   |
-     | "NXHeader>ApplRef"                                                    | "Secod ASW Message"       |
+     | "NXHeader>ApplRef"                                                    | "$ApplRef"                |
      | "createBan>banValueObjInfo>billingAddressInfo>zipCode"                | "88888"                   |
 
      When we receive the good response
@@ -64,7 +64,3 @@ Feature: Create ASW BAN
      And the message header response value named "NXHeader>ServiceName" must equal "AMD.ENSEMBLE.CREATE_BAN"
 #    And the response message tag named "createBan>message" contains the text "The system was unable to determine the market based on the zip code supplied"
 
-     
-
-
-# ApplRef must match

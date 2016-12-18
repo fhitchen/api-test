@@ -15,24 +15,23 @@
        (reset! message (set-values (replace-variables (table->rows data)) (slurp (str "resources/messages/" message-file)))))
 
 (Given #"^we send the message$" []
-       (print @message)
+       ;(print @message)
        (mq-send @message))
 
 (Given #"^we send the message with the following modified values:$" [data]
        (let [m (set-values (replace-variables (table->rows data)) @message)]
-         (print "Printing message..." m)
+         ;(print m)
          (mq-send m)))
 
 (When #"^we receive the bad response$" []
-      (print "DO I GET CALLED?")
-      (reset! response (mq-receive))
-      (print (.getText @response))
+      (reset! response (mq-receive (get-stored-value "$ApplRef")))
+      ;(println (.getText @response))
       (assert (not= nil @response)))
 
 (When #"^we receive the good response$" []
-      (reset! response (mq-receive))
+      (reset! response (mq-receive (get-stored-value "$ApplRef")))
       (assert (not= nil @response) "We didn't get a response")
-      (println (.getText @response))
+      ;(println (.getText @response))
       (let [m (get-value "createBan>message" (.getText @response))]
         (assert (= nil m) (str "Unexpected error message returned: " m))))
 
