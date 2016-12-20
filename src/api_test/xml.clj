@@ -15,12 +15,20 @@
 
 ;(def test-response "<?xml version='1.0'?><response><NXHeader><Version></Version><ServiceName>AMD.ENSEMBLE.CREATE_BAN</ServiceName><ApplRef>1477923078_BOOST_BAN</ApplRef><ReplyCompCode>0</ReplyCompCode></NXHeader><header></header><createBan><CreateBanRespInfo><banId>754776797</banId></CreateBanRespInfo></createBan></response>")
 
-(;def test-values (lazy-seq '({:content "888888888", :tag
+;(def test-values (lazy-seq '({:content "888888888", :tag
  ;"createBan>createBanRespInfo>banId"} {:content "1142664520", :tag
- ;"NXHeader>rReplyCompCode"}))
- )
+ ;"NXHeader>rReplyCompCode"})))
 
-;(println (pr-str test-values))
+                                        ;(println (pr-str test-values))
+
+(def ns-request "<?xml version='1.0' encoding='UTF-8'?><v1:getSubBasicInfoRequest xmlns:v1='http://integration.sprint.com/integration/interfaces/getSubBasicInfoBt/v1' xmlns:can='http://integration.sprint.com/v2/common/CanonicalDataModel.xsd'><can:mqMessageHeader><can:messageHeaderVersion>1</can:messageHeaderVersion><can:serviceName>getSubBasicInfoBt</can:serviceName><can:serviceVersion>1</can:serviceVersion><can:dialogTypeCode>2</can:dialogTypeCode><can:dialogSubTypeCode>1</can:dialogSubTypeCode><can:dialogReference>DSA-MSG</can:dialogReference><can:applicationGroup>99S</can:applicationGroup><can:componentGroup>Subscription</can:componentGroup><can:componentName>querySubscriberBasicInfoBt</can:componentName><can:reqSentDateTime>2016-12-19T01:54:09</can:reqSentDateTime><can:applicationUserId>DSAUSER</can:applicationUserId></can:mqMessageHeader><Data><Info><ptn>3094335396</ptn></Info><AddressInfo>true</AddressInfo><DetailInfo>true</DetailInfo></Data></v1:getSubBasicInfoRequest>" )
+
+(def xml (parse ns-request))
+
+;(pr xml)
+;(get-value "can:
+;(pr (class (xml/find-xmlns xml)))
+;(xml/declare-ns :xml.dav "DAV:")
 
 (def test-request "<?xml version='1.0'?><newPpSocInfo>
           <pricePlanSocCode>PGCDM1090</pricePlanSocCode>
@@ -182,6 +190,7 @@
                 (if-not (zip/up zz)
                   (println (str/replace path #"request>(.*)> (\".*\")" "\t| \"$1\" | $2 |"))
                   (do
+                    (println (.getPrefix (:tag (first (zip/up zz)))))
                     (recur (zip/up zz) (str (name (:tag (zip/node (zip/up zz)))) ">" path)))))))
           (recur (zip/next z)))))))
 

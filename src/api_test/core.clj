@@ -41,12 +41,36 @@
 ;(get-stored-value :$BANID)
 ;(replace-variables test-values)
 
-;(assoc-in {:content "$BANID" :tag "xxx" } [:content] "9999")
+                                        ;(assoc-in {:content "$BANID" :tag "xxx" } [:content] "9999")
+
+
+(def gen-msgs (atom (hash-map)))
+
+(defn gen
+  [input]
+  (with-open [rdr (clojure.java.io/reader (str "resources/" input))]
+    (doseq [line (line-seq rdr)]
+      (let [m (re-find #": (<\?xml .*$)" line)
+            service (x/get-value "NXHeader>ServiceName" (second m))]
+        (if (= nil service)
+          (println "nil message " line))
+        (if (= nil ((keyword service) @gen-msgs))
+          (do
+            (reset! gen-msgs (conj @gen-msgs {(keyword service) m}))
+            (println "Found " service))
+                                        ;(println "Skipping service " service)
+          )))))
+            
+
+
 
 (defn -main
   ""
   [& args]
-  (println (x/print-values (first args))))
+  (cond
+   (= "flatten" (first args)) (println (x/print-values (second args)))
+   (= "gen" (first args)) (gen "msgs.txt")
+   ))
 
 
 

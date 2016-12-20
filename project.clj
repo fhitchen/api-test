@@ -8,7 +8,7 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
 		 [info.cukes/cucumber-clojure "1.2.4"]
                  [org.clojure/data.zip "0.1.2"]
-                 [org.clojure/data.xml "0.1.0-beta2"]]
+                 [org.clojure/data.xml "0.1.0-beta3"]]
   :main ^:skip-aot api-test.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}
