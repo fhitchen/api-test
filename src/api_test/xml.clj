@@ -24,8 +24,16 @@
 (def ns-request "<?xml version='1.0' encoding='UTF-8'?><v1:getSubBasicInfoRequest xmlns:v1='http://integration.sprint.com/integration/interfaces/getSubBasicInfoBt/v1' xmlns:can='http://integration.sprint.com/v2/common/CanonicalDataModel.xsd'><can:mqMessageHeader><can:messageHeaderVersion>1</can:messageHeaderVersion><can:serviceName>getSubBasicInfoBt</can:serviceName><can:serviceVersion>1</can:serviceVersion><can:dialogTypeCode>2</can:dialogTypeCode><can:dialogSubTypeCode>1</can:dialogSubTypeCode><can:dialogReference>DSA-MSG</can:dialogReference><can:applicationGroup>99S</can:applicationGroup><can:componentGroup>Subscription</can:componentGroup><can:componentName>querySubscriberBasicInfoBt</can:componentName><can:reqSentDateTime>2016-12-19T01:54:09</can:reqSentDateTime><can:applicationUserId>DSAUSER</can:applicationUserId></can:mqMessageHeader><Data><Info><ptn>3094335396</ptn></Info><AddressInfo>true</AddressInfo><DetailInfo>true</DetailInfo></Data></v1:getSubBasicInfoRequest>" )
 
 (def xml (parse ns-request))
+(def zipper (zip/xml-zip xml))
+(def e-xml (map #(pr (str "tag=" (:tag %))) zipper )) 
 
-;(pr xml)
+(pr e-xml)
+
+
+
+
+(get-value "can:mqMessageHeader>can:serviceName" ns-request)
+(pr xml)
 ;(get-value "can:
 ;(pr (class (xml/find-xmlns xml)))
 ;(xml/declare-ns :xml.dav "DAV:")
@@ -95,7 +103,7 @@
 
 
 (def zipper (zip/xml-zip (parse test-request)))
-
+(pr zipper)
 (def fmatch (map #(zx/tag= %) '(:x)))
 (def match (map #(zx/tag= %) '(:b :c :d)))
 
@@ -175,6 +183,12 @@
         zipper (zip/xml-zip (parse message))]
     (apply zx/xml1-> zipper (conj (into [] matches) zx/text))))
 
+(defn get-name
+  [elt]
+  (if (= (class elt) javax.xml.namespace.QName)
+    (str (.getPrefix elt) ":" (.getLocalPart elt))
+    (name elt)))
+
 (defn print-values
   "print set values out of input message"
   [message-file]
@@ -188,10 +202,9 @@
             (do
               (loop [zz z path (str " \"" (zip/node z) "\"")]
                 (if-not (zip/up zz)
-                  (println (str/replace path #"request>(.*)> (\".*\")" "\t| \"$1\" | $2 |"))
+                  (println (str/replace path #".*?>(.*)> (\".*\")" "\t| \"$1\" | $2 |")) ; strips root off .*> for brevity.
                   (do
-                    (println (.getPrefix (:tag (first (zip/up zz)))))
-                    (recur (zip/up zz) (str (name (:tag (zip/node (zip/up zz)))) ">" path)))))))
+                    (recur (zip/up zz) (str (get-name (:tag (zip/node (zip/up zz)))) ">" path)))))))
           (recur (zip/next z)))))))
 
 
