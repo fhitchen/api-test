@@ -3,6 +3,7 @@
    [clojure.zip :as zip]
    [clojure.data.zip :as zf]
    [clojure.data.xml :as xml]
+   [clojure.data.xml.protocols :as xp]
    [clojure.data.zip.xml :as zx]
    [clojure.string :as str]
    [clojure.pprint :as p])
@@ -24,16 +25,27 @@
 (def ns-request "<?xml version='1.0' encoding='UTF-8'?><v1:getSubBasicInfoRequest xmlns:v1='http://integration.sprint.com/integration/interfaces/getSubBasicInfoBt/v1' xmlns:can='http://integration.sprint.com/v2/common/CanonicalDataModel.xsd'><can:mqMessageHeader><can:messageHeaderVersion>1</can:messageHeaderVersion><can:serviceName>getSubBasicInfoBt</can:serviceName><can:serviceVersion>1</can:serviceVersion><can:dialogTypeCode>2</can:dialogTypeCode><can:dialogSubTypeCode>1</can:dialogSubTypeCode><can:dialogReference>DSA-MSG</can:dialogReference><can:applicationGroup>99S</can:applicationGroup><can:componentGroup>Subscription</can:componentGroup><can:componentName>querySubscriberBasicInfoBt</can:componentName><can:reqSentDateTime>2016-12-19T01:54:09</can:reqSentDateTime><can:applicationUserId>DSAUSER</can:applicationUserId></can:mqMessageHeader><Data><Info><ptn>3094335396</ptn></Info><AddressInfo>true</AddressInfo><DetailInfo>true</DetailInfo></Data></v1:getSubBasicInfoRequest>" )
 
 (def xml (parse ns-request))
+;(println (xml/find-xmlns xml))
+(p/pprint xml)
 (def zipper (zip/xml-zip xml))
 (def e-xml (map #(pr (str "tag=" (:tag %))) zipper )) 
 
-(pr e-xml)
+;(pr e-xml)
+(xml/alias-ns :can "'http://integration.sprint.com/v2/common/CanonicalDataModel.xsd")
+(remove-ns 'can)
+(def fmatch (map #(zx/tag= %) '(::can/serviceName)))
+(def match (map #(zx/tag= %) '(:b :c :d)))
+
+(def content '("UNTETH" "foo"))
+
+(def big-match (concat match (map #(zx/text= %) (list (first content)))))
+(println (apply zx/xml-> zipper fmatch))
 
 
 
 
-(get-value "can:mqMessageHeader>can:serviceName" ns-request)
-(pr xml)
+;(get-value "can:mqMessageHeader>can:serviceName" ns-request)
+;(pr xml)
 ;(get-value "can:
 ;(pr (class (xml/find-xmlns xml)))
 ;(xml/declare-ns :xml.dav "DAV:")
@@ -189,28 +201,64 @@
     (str (.getPrefix elt) ":" (.getLocalPart elt))
     (name elt)))
 
+(defn ns-replace
+  [message]
+  (loop [loc (zip/xml-zip message)]
+    (if (zip/end? loc)
+      (zip/root loc)
+      (do
+        (let [tag (:tag (zip/node loc))]
+          (if (not= nil tag)
+            (println (get-name tag))))
+      ;(if (not= nil (:tag (zip/node loc)))
+       ; (let [new-loc (zip/edit loc {:tag (get-name (:tag (zip/node loc)))})]
+        ;  (if (not (= (zip/node new-loc) (zip/node loc)))
+                                        ;   (recur (zip/next new-loc))))
+        (recur (zip/next loc)))  )))
+
+(ns-replace xml)
+
 (defn print-values
   "print set values out of input message"
-  [message-file]
-  (let [message (slurp (str "resources/messages/" message-file))
-        zipper (zip/xml-zip (parse message))]
-    (loop [z zipper]
-      (if (zip/end? z)
-        true
-        (do
-          (if (string? (zip/node z))
-            (do
-              (loop [zz z path (str " \"" (zip/node z) "\"")]
-                (if-not (zip/up zz)
-                  (println (str/replace path #".*?>(.*)> (\".*\")" "\t| \"$1\" | $2 |")) ; strips root off .*> for brevity.
-                  (do
-                    (recur (zip/up zz) (str (get-name (:tag (zip/node (zip/up zz)))) ">" path)))))))
-          (recur (zip/next z)))))))
+  ([message-file] (print-values "resources/messages/" message-file))
+  ([path message-file]
+     (let [message (slurp (str path message-file))
+           zipper (zip/xml-zip (parse message))]
+       (loop [z zipper]
+         (if (zip/end? z)
+           true
+           (do
+             (if (string? (zip/node z))
+               (do
+                 (loop [zz z path (str " \"" (zip/node z) "\"")]
+                   (if-not (zip/up zz)
+                     (println (str/replace path #".*?>(.*)> (\".*\")" "\t| \"$1\" | $2 |")) ; strips root off .*> for brevity.
+                     (do
+                       (recur (zip/up zz) (str (get-name (:tag (zip/node (zip/up zz)))) ">" path)))))))
+             (recur (zip/next z))))))))
 
+(defn gen-values
+  "generates set values out of input message"
+  ([message-file] (gen-values "resources/messages/" message-file))
+  ([path message-file]
+     (let [message (slurp (str path message-file))
+           zipper (zip/xml-zip (parse message))]
+       (loop [z zipper s (atom "")]
+         (if (zip/end? z)
+           @s
+           (do
+             (if (string? (zip/node z))
+               (do
+                 (loop [zz z path (str " \"" (zip/node z) "\"")]
+                   (if-not (zip/up zz)
+                     (reset! s (.concat @s (str/replace path #".*?>(.*)> (\".*\")" "\t| \"$1\" | $2 |\n"))) ; strips root off .*> for brevity.
+                     (do
+                       (recur (zip/up zz) (str (get-name (:tag (zip/node (zip/up zz)))) ">" path)))))))
+             (recur (zip/next z) s)))))))
 
 ;(print-values "bottom.xml")
-
-
+(def x (gen-values "xmlns.xml"))
+(print x)
 
 
 

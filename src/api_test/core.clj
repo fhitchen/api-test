@@ -44,7 +44,34 @@
                                         ;(assoc-in {:content "$BANID" :tag "xxx" } [:content] "9999")
 
 
+
 (def gen-msgs (atom (hash-map)))
+
+(def feature-template "Feature: Test %s message
+
+  Rules:
+  - the ApplRef in the request must match the ApplRef in the response.
+
+  Background:   
+     Given the message \"%s.xml\" with the following values:
+
+     | tag                                                                   | content                   |
+")
+
+(defn create-feature-files
+  [m]
+  (doseq [[n message] m]
+    (println "Found Name" n)
+    (let [m-name (name n)
+          feature-file (str "generated/features/" m-name ".feature")
+          message-file (str m-name ".xml")]
+      (spit feature-file
+            (format feature-template m-name m-name))
+      (println (class message))
+      (spit (str "generated/messages/" message-file) message)
+      (spit feature-file
+            (x/gen-values "generated/messages/" message-file) :append true))))
+    
 
 (defn gen
   [input]
@@ -52,14 +79,12 @@
     (doseq [line (line-seq rdr)]
       (let [m (re-find #": (<\?xml .*$)" line)
             service (x/get-value "NXHeader>ServiceName" (second m))]
-        (if (= nil service)
-          (println "nil message " line))
-        (if (= nil ((keyword service) @gen-msgs))
-          (do
-            (reset! gen-msgs (conj @gen-msgs {(keyword service) m}))
-            (println "Found " service))
-                                        ;(println "Skipping service " service)
-          )))))
+        (if (not= nil service)
+          (if (= nil ((keyword service) @gen-msgs))
+            (do
+              (reset! gen-msgs (conj @gen-msgs {(keyword service) (second m)}))
+              (println "Found " service)))))))
+  (create-feature-files @gen-msgs))
             
 
 
@@ -69,7 +94,7 @@
   [& args]
   (cond
    (= "flatten" (first args)) (println (x/print-values (second args)))
-   (= "gen" (first args)) (gen "msgs.txt")
+   (= "gen" (first args)) (gen (second args))
    ))
 
 
